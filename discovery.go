@@ -3,7 +3,9 @@ package wks
 import (
 	"crypto/sha1"
 	"errors"
+	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"strings"
 
@@ -27,7 +29,16 @@ func Discover(addr string) ([]*openpgp.Entity, error) {
 		return nil, err
 	}
 
-	// TODO: SRV record
+	_, addrs, err := net.LookupSRV("openpgpkey", "tcp", domain)
+	if err != nil {
+		return nil, err
+	}
+	if len(addrs) > 0 {
+		addr := addrs[0]
+		if addr.Target == domain || strings.HasSuffix(addr.Target, "."+domain) {
+			domain = fmt.Sprintf("%v:%v", addr.Target, addr.Port)
+		}
+	}
 
 	hashedLocal := sha1.Sum([]byte(local))
 	url := "https://"+domain+"/.well-known/openpgpkey/hu/" + zbase32.EncodeToString(hashedLocal[:])
