@@ -30,7 +30,11 @@ func Discover(addr string) ([]*openpgp.Entity, error) {
 	}
 
 	_, addrs, err := net.LookupSRV("openpgpkey", "tcp", domain)
-	if err != nil {
+	if dnsErr, ok := err.(*net.DNSError); ok {
+		if dnsErr.IsTemporary {
+			return nil, err
+		}
+	} else if err != nil {
 		return nil, err
 	}
 	if len(addrs) > 0 {
