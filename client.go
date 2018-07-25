@@ -1,26 +1,15 @@
 package wkd
 
 import (
-	"crypto/sha1"
-	"errors"
 	"fmt"
 	"io"
 	"net"
 	"net/http"
 	"strings"
 
-	"github.com/tv42/zbase32"
 	"golang.org/x/crypto/openpgp"
 	"golang.org/x/crypto/openpgp/packet"
 )
-
-func splitAddress(addr string) (local, domain string, err error) {
-	parts := strings.Split(addr, "@")
-	if len(parts) != 2 {
-		return "", "", errors.New("wkd: invalid email address")
-	}
-	return parts[0], parts[1], nil
-}
 
 // Discover retrieves keys associated to an email address.
 func Discover(addr string) ([]*openpgp.Entity, error) {
@@ -44,8 +33,7 @@ func Discover(addr string) ([]*openpgp.Entity, error) {
 		}
 	}
 
-	hashedLocal := sha1.Sum([]byte(local))
-	url := "https://"+domain+"/" + wellKnownDir + "/hu/" + zbase32.EncodeToString(hashedLocal[:])
+	url := "https://" + domain + wellKnownBase + "/hu/" + hashLocal(local)
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
