@@ -33,7 +33,7 @@ func Discover(addr string) ([]*openpgp.Entity, error) {
 		}
 	}
 
-	url := "https://" + domain + wellKnownBase + "/hu/" + hashLocal(local)
+	url := "https://" + domain + Base + "/hu/" + hashLocal(local)
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err

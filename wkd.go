@@ -10,7 +10,8 @@ import (
 	"github.com/tv42/zbase32"
 )
 
-const wellKnownBase = "/.well-known/openpgpkey"
+// Base is the well-known base path for WKD.
+const Base = "/.well-known/openpgpkey"
 
 // ErrNotFound is returned when the directory doesn't contain a public key for
 // the provided address.

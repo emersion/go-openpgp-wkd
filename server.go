@@ -37,12 +37,12 @@ func (h *Handler) serveDiscovery(w http.ResponseWriter, r *http.Request, hash st
 
 // ServeHTTP implements http.Handler.
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if !strings.HasPrefix(r.URL.Path, wellKnownBase) {
+	if !strings.HasPrefix(r.URL.Path, Base) {
 		http.NotFound(w, r)
 		return
 	}
+	path := strings.TrimPrefix(r.URL.Path, Base)
 
-	path := strings.TrimPrefix(r.URL.Path, wellKnownBase)
 	if path == "/policy" {
 		h.servePolicy(w, r)
 		return
