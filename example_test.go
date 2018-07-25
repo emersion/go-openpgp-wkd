@@ -1,13 +1,13 @@
-package wks_test
+package wkd_test
 
 import (
 	"log"
 
-	"github.com/emersion/go-openpgp-wks"
+	"github.com/emersion/go-openpgp-wkd"
 )
 
 func ExampleDiscover() {
-	pubkeys, err := wks.Discover("me@davlgd.fr")
+	pubkeys, err := wkd.Discover("me@davlgd.fr")
 	if err != nil {
 		log.Fatal(err)
 	}

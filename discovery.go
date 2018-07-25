@@ -1,4 +1,4 @@
-package wks
+package wkd
 
 import (
 	"crypto/sha1"
@@ -17,7 +17,7 @@ import (
 func splitAddress(addr string) (local, domain string, err error) {
 	parts := strings.Split(addr, "@")
 	if len(parts) != 2 {
-		return "", "", errors.New("wks: invalid email address")
+		return "", "", errors.New("wkd: invalid email address")
 	}
 	return parts[0], parts[1], nil
 }
