@@ -45,7 +45,7 @@ func Discover(addr string) ([]*openpgp.Entity, error) {
 	}
 
 	hashedLocal := sha1.Sum([]byte(local))
-	url := "https://"+domain+"/.well-known/openpgpkey/hu/" + zbase32.EncodeToString(hashedLocal[:])
+	url := "https://"+domain+"/" + wellKnownDir + "/hu/" + zbase32.EncodeToString(hashedLocal[:])
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
