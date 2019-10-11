@@ -1,7 +1,6 @@
 package wkd
 
 import (
-	"io"
 	"net/http"
 	"strings"
 
@@ -16,7 +15,7 @@ type Handler struct {
 }
 
 func (h *Handler) servePolicy(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "protocol-version: 6\n")
+	writePolicy(w)
 }
 
 func (h *Handler) serveDiscovery(w http.ResponseWriter, r *http.Request, hash string) {

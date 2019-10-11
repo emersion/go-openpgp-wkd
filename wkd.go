@@ -5,10 +5,15 @@ package wkd
 import (
 	"crypto/sha1"
 	"errors"
+	"fmt"
+	"io"
 	"strings"
 
 	"github.com/tv42/zbase32"
 )
+
+// Version is the WKD protocol version.
+const Version = 6
 
 // Base is the well-known base path for WKD.
 const Base = "/.well-known/openpgpkey"
@@ -38,4 +43,9 @@ func HashAddress(addr string) (string, error) {
 		return "", err
 	}
 	return hashLocal(local), nil
+}
+
+func writePolicy(w io.Writer) error {
+	_, err := fmt.Fprintf(w, "protocol-version: %v\n", Version)
+	return err
 }
