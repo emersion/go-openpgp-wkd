@@ -20,7 +20,7 @@ func ExampleDiscover() {
 
 func ExampleHandler() {
 	h := wkd.Handler{
-		Discover: func(hash string) ([]*openpgp.Entity, error) {
+		Discover: func(hash, domain, localPart string) ([]*openpgp.Entity, error) {
 			stallmanHash, _ := wkd.HashAddress("rms@gnu.org")
 			if hash != stallmanHash {
 				return nil, wkd.ErrNotFound

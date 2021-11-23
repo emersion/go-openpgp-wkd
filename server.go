@@ -11,15 +11,15 @@ import (
 type Handler struct {
 	// Discover retrieves keys for an address. If there's no key available for
 	// this address, ErrNotFound should be returned.
-	Discover func(hash string) ([]*openpgp.Entity, error)
+	Discover func(hash, domain, local string) ([]*openpgp.Entity, error)
 }
 
 func (h *Handler) servePolicy(w http.ResponseWriter, r *http.Request) {
 	writePolicy(w)
 }
 
-func (h *Handler) serveDiscovery(w http.ResponseWriter, r *http.Request, hash string) {
-	pubkeys, err := h.Discover(hash)
+func (h *Handler) serveDiscovery(w http.ResponseWriter, r *http.Request, hash, domain, local string) {
+	pubkeys, err := h.Discover(hash, domain, local)
 	if err == ErrNotFound {
 		http.NotFound(w, r)
 		return
@@ -47,9 +47,20 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	query := r.URL.Query()
+	localPart := query.Get("l")
+
 	if strings.HasPrefix(path, "/hu/") {
 		hash := strings.TrimPrefix(path, "/hu/")
-		h.serveDiscovery(w, r, hash)
+		h.serveDiscovery(w, r, hash, r.Host, localPart)
+		return
+	}
+
+	pathParts := strings.Split(path, "/")
+	if len(pathParts) == 4 && pathParts[2] == "hu" {
+		hash := pathParts[3]
+		domain := pathParts[1]
+		h.serveDiscovery(w, r, hash, domain, localPart)
 		return
 	}
 
