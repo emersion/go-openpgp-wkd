@@ -1,17 +1,17 @@
 package wkd
 
 import (
+	"io"
 	"net/http"
 	"strings"
-
-	"golang.org/x/crypto/openpgp"
 )
 
 // Handler is a HTTP WKD handler.
 type Handler struct {
 	// Discover retrieves keys for an address. If there's no key available for
 	// this address, ErrNotFound should be returned.
-	Discover func(hash, domain, local string) ([]*openpgp.Entity, error)
+	// The returned io.Reader should read the binary representation of an OpenPGP key
+	Discover func(hash, domain, local string) (io.Reader, error)
 }
 
 func (h *Handler) servePolicy(w http.ResponseWriter, r *http.Request) {
@@ -29,9 +29,7 @@ func (h *Handler) serveDiscovery(w http.ResponseWriter, r *http.Request, hash, d
 	}
 
 	w.Header().Set("Content-Type", "application/octet-string")
-	for _, e := range pubkeys {
-		e.Serialize(w)
-	}
+	io.Copy(w, pubkeys)
 }
 
 // ServeHTTP implements http.Handler.
