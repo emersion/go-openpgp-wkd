@@ -1,6 +1,8 @@
 package wkd_test
 
 import (
+	"context"
+	"io"
 	"log"
 	"net/http"
 	"strings"
@@ -20,12 +22,23 @@ func ExampleDiscover() {
 
 func ExampleHandler() {
 	h := wkd.Handler{
-		Discover: func(hash string) ([]*openpgp.Entity, error) {
+		Discover: func(_ context.Context, hash, domain, localPart string) (io.Reader, error) {
 			stallmanHash, _ := wkd.HashAddress("rms@gnu.org")
 			if hash != stallmanHash {
 				return nil, wkd.ErrNotFound
 			}
-			return openpgp.ReadArmoredKeyRing(strings.NewReader(stallmanPubkey))
+			pubkeys, err := openpgp.ReadArmoredKeyRing(strings.NewReader(stallmanPubkey))
+			if err != nil {
+				return nil, err
+			}
+			r, w := io.Pipe()
+			go func() {
+				for _, e := range pubkeys {
+					e.Serialize(w)
+				}
+				w.Close()
+			}()
+			return r, nil
 		},
 	}
 
