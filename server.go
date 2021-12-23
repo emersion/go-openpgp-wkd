@@ -1,6 +1,7 @@
 package wkd
 
 import (
+	"context"
 	"io"
 	"net/http"
 	"strings"
@@ -11,7 +12,7 @@ type Handler struct {
 	// Discover retrieves keys for an address. If there's no key available for
 	// this address, ErrNotFound should be returned.
 	// The returned io.Reader should read the binary representation of an OpenPGP key
-	Discover func(hash, domain, local string) (io.Reader, error)
+	Discover func(ctx context.Context, hash, domain, local string) (io.Reader, error)
 }
 
 func (h *Handler) servePolicy(w http.ResponseWriter, r *http.Request) {
@@ -19,7 +20,8 @@ func (h *Handler) servePolicy(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) serveDiscovery(w http.ResponseWriter, r *http.Request, hash, domain, local string) {
-	pubkeys, err := h.Discover(hash, domain, local)
+	ctx := r.Context()
+	pubkeys, err := h.Discover(ctx, hash, domain, local)
 	if err == ErrNotFound {
 		http.NotFound(w, r)
 		return

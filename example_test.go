@@ -1,6 +1,7 @@
 package wkd_test
 
 import (
+	"context"
 	"io"
 	"log"
 	"net/http"
@@ -21,7 +22,7 @@ func ExampleDiscover() {
 
 func ExampleHandler() {
 	h := wkd.Handler{
-		Discover: func(hash, domain, localPart string) (io.Reader, error) {
+		Discover: func(_ context.Context, hash, domain, localPart string) (io.Reader, error) {
 			stallmanHash, _ := wkd.HashAddress("rms@gnu.org")
 			if hash != stallmanHash {
 				return nil, wkd.ErrNotFound
